@@ -166,11 +166,3 @@ For further assistance, contact kushal_rs@ma.iitr.ac.in
 ![App Screenshot](https://github.com/user-attachments/assets/b1cf9ebb-3acd-430d-b371-8ecea93a10ba)
 
 
-
-
-<img width="1680" alt="Screenshot 2025-01-25 at 11 46 35 PM" src="https://github.com/user-attachments/assets/bf806825-6a05-4535-b1ac-15d497c79456" />
-<img width="1680" alt="Screenshot 2025-01-25 at 11 45 58 PM" src="https://github.com/user-attachments/assets/d2058ad8-6617-40bc-8f96-1a9ee611ff3a" />
-<img width="1680" alt="Screenshot 2025-01-25 at 11 45 51 PM" src="https://github.com/user-attachments/assets/e97a6d64-acef-4e41-820e-5186b5b836e6" />
-<img width="1680" alt="Screenshot 2025-01-25 at 11 55 03 PM" src="https://github.com/user-attachments/assets/fa34e533-2fdd-4c79-8f2f-5c313c3613ee" />
-<img width="1680" alt="Screenshot 2025-01-25 at 11 46 47 PM" src="https://github.com/user-attachments/assets/b1cf9ebb-3acd-430d-b371-8ecea93a10ba" />
-
