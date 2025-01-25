@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Search Engine</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3a86ff;
+            --accent-color: #4c49ea;
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.8);
+        }
+
+        .dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #fff;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --card-bg: rgba(30, 30, 30, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189,100%,56%,0.3) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355,100%,93%,0.3) 0px, transparent 50%),
+                radial-gradient(at 80% 50%, hsla(340,100%,76%,0.3) 0px, transparent 50%);
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+        }
+
+        nav {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem;
+            position: relative;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .greeting {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 5s infinite;
+        }
+
+        .greeting-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-bar-container {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+        }
+
+        .search-icon {
+            color: var(--text-color);
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            outline: none;
+            border: none;
+            background: transparent;
+            color: var(--text-color);
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 0 0 12px 12px;
+            display: none;
+            z-index: 10;
+        }
+
+        .search-suggestions.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .suggestion {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .suggestion:hover {
+            background: var(--glass-border);
+        }
+
+        .search-results {
+            margin-top: 2rem;
+        }
+
+        .search-history {
+            margin-top: 2rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .delete-history {
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .delete-history:hover {
+            text-decoration: underline;
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            background: var(--glass-bg);
+            border-radius: 8px;
+            padding: 0.3rem 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            transition: background 0.2s ease;
+            gap: 0.5rem;
+        }
+
+        .history-item-text {
+            flex-grow: 1;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-item-remove {
+            color: var(--primary-color);
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .history-item-remove:hover {
+            opacity: 1;
+        }
+
+        .history-item:hover {
+            background: var(--glass-border);
+        }
+
+        /* Google Custom Search Styling */
+        .gsc-input {
+            background: transparent !important;
+          }
+
+        .gsc-control-cse {
+            background-color: transparent !important;
+            border: none !important;
+        }
+
+        .gsc-input-box {
+            border-radius: 12px !important;
+            background-color: transparent !important;
+        }
+
+        .gsc-search-button {
+            background-color: var(--primary-color) !important;
+            border-radius: 12px !important;
+        }
+
+        .gsc-completion-container {
+          background-color: var(--card-bg) !important;
+        }
+        tr {
+          background: none !important;
+        }
+        .gsc-results-wrapper-overlay {
+            background-color: var(--bg-color) !important;
+        }
+
+        .gs-title {
+            color: var(--primary-color) !important;
+        }
+
+        .gs-snippet {
+            color: var(--text-color) !important;
+            opacity: 0.8;
+        }
+
+        .gs-visibleUrl {
+            color: #2ecc71 !important;
+        }
+
+        .result-card {
+            background: var(--glass-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="glass">
+        <div class="theme-toggle glass" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <h1 class="greeting" id="greeting">Good Morning</h1>
+        <p class="greeting-subtitle">Discover the world with enhanced search capabilities</p>
+        
+        <div class="search-container glass">
+            <div id="google-search-container">
+                <script async src="https://cse.google.com/cse.js?cx=62f685c403e1f4074"></script>
+                <div class="gcse-searchbox"></div>
+            </div>
+        </div>
+
+        <div class="search-history glass" id="searchHistory">
+            <div class="history-header">
+                <h3>Search History</h3>
+                <div class="delete-history" id="deleteHistoryBtn">Clear History</div>
+            </div>
+            <div class="history-list" id="historyList"></div>
+        </div>
+
+        <div class="search-results" id="searchResults">
+            <h3>Search Results</h3>
+            <div id="resultsList" class="gsc-results"><div class="gcse-searchresults"></div></div>
+        </div>
+    </div>
+
+    <script async src="https://cse.google.com/cse.js?cx=62f685c403e1f4074"></script>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+        
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            body.classList.toggle('dark-mode');
+            themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('darkMode', isDarkMode);
+        });
+
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            const greeting = document.getElementById('greeting');
+            
+            if (hour < 12) greeting.textContent = 'Good Morning';
+            else if (hour < 18) greeting.textContent = 'Good Afternoon';
+            else greeting.textContent = 'Good Evening';
+        }
+        updateGreeting();
+        setInterval(updateGreeting, 60000);
+
+        const historyList = document.getElementById('historyList');
+        const deleteHistoryBtn = document.getElementById('deleteHistoryBtn');
+
+        function loadSearchHistory() {
+            const history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+            historyList.innerHTML = history.map((query, index) => `
+                <div class="history-item">
+                    <div class="history-item-text" onclick="performHistorySearch('${query}')">${query}</div>
+                    <div class="history-item-remove" onclick="removeHistoryItem(${index})">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function saveToSearchHistory(query) {
+            if (!query) return;
+
+            const history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+            
+            const filteredHistory = history.filter(item => item !== query);
+            filteredHistory.unshift(query);
+            localStorage.setItem('searchHistory', JSON.stringify(filteredHistory.slice(0, 10)));
+            loadSearchHistory();
+        }
+
+        function removeHistoryItem(index) {
+            const history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+            history.splice(index, 1);
+            localStorage.setItem('searchHistory', JSON.stringify(history));
+            loadSearchHistory();
+        }
+
+        function performHistorySearch(query) {
+            const searchbox = document.querySelector('.gsc-input-box input');
+            if (searchbox) {
+                searchbox.value = query;
+                const searchButton = document.querySelector('.gsc-search-button');
+                if (searchButton) {
+                    searchButton.click();
+                }
+            }
+        }
+        deleteHistoryBtn.addEventListener('click', () => {
+            localStorage.removeItem('searchHistory');
+            historyList.innerHTML = '';
+        });
+
+        window.onload = function() {
+            setTimeout(() => {
+                const searchInput = document.querySelector('.gsc-input-box input');
+                
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', (e) => {
+                        if (e.key === 'Enter') {
+                            const query = searchInput.value.trim();
+                            if (query) {
+                                saveToSearchHistory(query);
+                            }
+                        }
+                    });
+                    const searchButton = document.querySelector('.gsc-search-button');
+                    if (searchButton) {
+                        searchButton.addEventListener('click', () => {
+                            const query = searchInput.value.trim();
+                            if (query) {
+                                saveToSearchHistory(query);
+                            }
+                        });
+                    }
+                }
+                loadSearchHistory();
+            }, 2000); // Delay kiya taki google ka engine load hoh jaye ok
+        };
+        (function(){
+          if(!window.chatbase||window.chatbase("getState")!=="initialized"){
+            window.chatbase=(...arguments)=>{
+              if(!window.chatbase.q){window.chatbase.q=[]}
+                window.chatbase.q.push(arguments)
+            };
+              window.chatbase=new Proxy(window.chatbase,{
+                get(target,prop){if(prop==="q"){
+                  return target.q
+                }
+                  return(...args)=>target(prop,...args)}
+              })
+            }
+            const onLoad=function(){
+              const script=document.createElement("script");
+              script.src="https://www.chatbase.co/embed.min.js";
+              script.id="IXsvqoXWg9NJkyoGXm1VL";
+              script.domain="www.chatbase.co";
+              document.body.appendChild(script)};
+              if(document.readyState==="complete"){
+                onLoad()}else{window.addEventListener("load",onLoad)
+              }
+          })();
+    </script>
+</body>
+</html>
